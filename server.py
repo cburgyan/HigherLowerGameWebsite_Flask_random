@@ -4,40 +4,79 @@ import random
 
 app = Flask(__name__)
 
-correct_number = str(random.randint(0, 9))
-print(correct_number)
+correct_number = -1
+guessed_number = -1
 
 
-def make_h1(function):
-    def wrapper(*args):
-        return f'<h1>{function()}</h1>'
-    return wrapper
+# def make_h1(function):
+#     def wrapper(*args):
+#         return f'<h1>{function()}</h1>'
+#     return wrapper
+#
+#
+# def add_gif(function):
+#     def wrapper():
+#         return f'{function()}<img src="https://media1.giphy.com/media/bmrxNoGqGNMAM/200.webp?cid=ecf05e47kykh4urnjbgsz6olbxb3mc3m6nl5l4v1hesv85j9&rid=200.webp&ct=g">'
+#     return wrapper
 
 
-def add_gif(function):
+def add_gif_b(function):
     def wrapper():
-        return f'{function()}<img src="https://media1.giphy.com/media/bmrxNoGqGNMAM/200.webp?cid=ecf05e47kykh4urnjbgsz6olbxb3mc3m6nl5l4v1hesv85j9&rid=200.webp&ct=g">'
+        function_result = function()
+        if guessed_number == correct_number:
+            src = 'https://media.giphy.com/media/4T7e4DmcrP9du/giphy.gif'
+        elif guessed_number > correct_number:
+            src = 'https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif'
+        elif guessed_number != -1:
+            src = 'https://media.giphy.com/media/jD4DwBtqPXRXa/giphy.gif'
+        else:
+            src = 'https://media1.giphy.com/media/bmrxNoGqGNMAM/200.webp?cid=ecf05e47kykh4urnjbgsz6olbxb3mc3m6nl5l4v1hesv85j9&rid=200.webp&ct=g'
+        return f"{function_result}<img src={src}>"
     return wrapper
+
+
+def make_h1_b(function):
+    def wrapper():
+        func_result = function()
+        if guessed_number == correct_number:
+            color = 'green'
+        elif guessed_number > correct_number:
+            color = 'blue'
+        elif guessed_number != -1:
+            color = 'red'
+        else:
+            color = 'black'
+        return f"<h1 style='color: {color}'>{func_result}</h1>"
+    return wrapper
+
+
+@add_gif_b
+@make_h1_b
+def get_message():
+    if guessed_number == correct_number:
+        return "That is Correct!!!😎"
+    elif guessed_number > correct_number:
+        return "Your guess is Too Hiiiigh!😜"
+    else:
+        return "Your guess is Too Loooow!😣"
 
 
 @app.route('/')
-@add_gif
-@make_h1
+@add_gif_b
+@make_h1_b
 def intro_page():
+    global guessed_number, correct_number
+    correct_number = random.randint(0, 9)
+    guessed_number = -1
     return'Guess a number between 0 and 9'
 
 
-@app.route('/<number>')
+@app.route('/<int:number>')
 def response_pages(number):
-    if number == correct_number:
-        return "<h1 style='color: green'>That is Correct!!!😎</h1>"
-    elif number > correct_number:
-        return "<h1 style='color: blue'>Your guess is Too Hiiiigh!😜</h1>"
-    else:
-        return "<h1 style='color: red'>Your guess is Too Loooow!😣</h1>"
+    global guessed_number
+    guessed_number = number
+    return get_message()
 
-
-# intro_page('https://media1.giphy.com/media/bmrxNoGqGNMAM/200.webp?cid=ecf05e47kykh4urnjbgsz6olbxb3mc3m6nl5l4v1hesv85j9&rid=200.webp&ct=g')
 
 if __name__ == "__main__":
     app.run(debug=True)
