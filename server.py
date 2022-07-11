@@ -9,14 +9,8 @@ print(correct_number)
 
 
 def make_h1(function):
-    def wrapper():
-        return f'<h1>{function()}</h1>'
-    return wrapper
-
-
-def make_h1_b(function):
     def wrapper(*args):
-        return f'<h1>{function(args[0])}</h1>'
+        return f'<h1>{function()}</h1>'
     return wrapper
 
 
@@ -30,7 +24,7 @@ def add_gif(function):
 @add_gif
 @make_h1
 def intro_page():
-    return 'Guess a number between 0 and 9'
+    return'Guess a number between 0 and 9'
 
 
 @app.route('/<number>')
